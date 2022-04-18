@@ -6,43 +6,48 @@ From Covidprojects..coviddeaths
 Where continent is not null 
 order by 3,4
 
+
 --Showing percent of worldwide population who got infected
 
-Select Location, date, Population, total_cases,  (total_cases/population)*100 as PercentPopulationInfected
-From Covidprojects..CovidDeaths
-order by 1,2
 
---Showing countries having more cases
-
-Select Location, Population, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
+Select Location, Population, MAX(new_cases) as HighestInfectionCount,  Max((new_cases/population))*100 as PercentPopulationInfected
 From Covidprojects..CovidDeaths
 Group by Location, Population
 order by PercentPopulationInfected desc
 
---Showing countries  with highest total death count 
 
-Select Location, MAX(cast(Total_deaths as int)) as TotalDeathCount
+--Showing deathpercentage
+
+
+Select date, SUM(new_cases) as total_cases, SUM(cast(new_deaths as int)) as total_deaths, SUM(cast(new_deaths as int))/SUM(new_Cases)*100 as DeathPercentage
+From Covidprojects ..CovidDeaths
+where continent is not null 
+group by date 
+order by 1,2,3 desc
+
+
+--Showing highest total death count 
+
+
+Select location, SUM(cast(new_deaths as int)) as TotalDeathCount
 From Covidprojects..CovidDeaths
-Where continent is not null 
-Group by Location
+Where continent is null 
+and location not in ('World', 'European Union', 'International')
+Group by location
 order by TotalDeathCount desc
 
---Showing continents total death count 
-
-Select continent, MAX(cast(Total_deaths as int)) as TotalDeathCount
-From Covidprojects..CovidDeaths
-Where continent is not null 
-Group by continent
-order by TotalDeathCount desc
 
 --Worldwide cases
+
 
 Select SUM(new_cases) as total_cases, SUM(cast(new_deaths as int)) as total_deaths, SUM(cast(new_deaths as int))/SUM(New_Cases)*100 as DeathPercentage
 From covidprojects..CovidDeaths
 where continent is not null 
 order by 1,2
 
+
 --People who got vaccinated
+
 
 Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations
 , SUM(Cast(vac.new_vaccinations as bigint)) OVER (Partition by dea.Location Order by dea.location, dea.Date) as TotalPeopleVaccinated
@@ -74,6 +79,7 @@ From PopvsVac
 
 --Now creating temp table for same query
 
+
 DROP Table if exists #PercentagePopulationVaccinated
 Create Table #PercentagePopulationVaccinated
 (
@@ -96,9 +102,11 @@ Join Covidprojects..Vaccinations vac
 Select *, (TotalPeopleVaccinated/Population)*100 as PercentofVaccinatedPopulation
 From #PercentagePopulationVaccinated
 
+
 --Creating view
 
-USE [Covidprojects]
+
+USE [Covidprojects]        
 GO
 
 SET ANSI_NULLS ON
