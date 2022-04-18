@@ -47,6 +47,9 @@ where dea.continent is not null
 order by 2,3
 
 
+ --Creating temp table for above query
+ 
+ 
 DROP Table if exists #PercentagePopulationVaccinated
 Create Table #PercentagePopulationVaccinated
 (
