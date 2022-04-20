@@ -5,9 +5,9 @@ order by 1,2
 
 --Showing percent of worldwide population who got infected
 
-Select Location, Population, MAX(new_cases) as HighestInfectionCount,  Max((new_cases/population))*100 as PercentPopulationInfected
+Select Location, Population, date, MAX(new_cases) as HighestInfectionCount,  Max((new_cases/population))*100 as PercentPopulationInfected
 From Covidprojects..CovidDeaths
-Group by Location, Population
+Group by Location, Population, date
 order by PercentPopulationInfected desc
 
 --Showing deathpercentage
